@@ -158,8 +158,12 @@ class MainActivity : AppCompatActivity() {
                 // 현재 어느탭을 보여주고 있던지.. 새로 검색결과를 받으면 무조건 PlaceListFragment가 보여주도록 함
 //                binding.bnv.selectedItemId = R.id.menu_bnv_list // 선택된 아이템 아이디를 지정하면 바꿔줌
 
-                adapter.addPlaceList(documents!!)
-                binding.tvCnt.text = "${(adapter.getPage()-1)*15+documents.size}/${meta?.total_count}"
+                documents?.let{
+                    adapter.addPlaceList(documents)
+                    binding.tvCnt.text = "${(adapter.getPage()-1)*15+documents.size}/${meta?.total_count}"
+
+                }
+
 
 //                ObjectAnimator.ofFloat(binding.fabRefresh, "translationY", 0f).start()
 //                ObjectAnimator.ofFloat(binding.fabRefresh, "rotationX", 0f).start()

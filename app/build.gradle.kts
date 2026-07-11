@@ -1,3 +1,6 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -15,6 +18,15 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val localProperties = Properties()
+        localProperties.load(rootProject.file("local.properties").inputStream())
+
+        buildConfigField(
+            "String",
+            "KAKAO_REST_API_KEY",
+            "\"${localProperties.getProperty("KAKAO_REST_API_KEY")}\""
+        )
     }
 
     buildTypes {
@@ -36,6 +48,7 @@ android {
 
     buildFeatures{
         viewBinding = true
+        buildConfig = true
     }
 }
 

@@ -6,6 +6,7 @@ import com.yrlee.tpsearchplaceapp.model.Place
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.PartMap
@@ -15,7 +16,6 @@ interface RetrofitService {
 
     // 인증키는 헤더정보로
     // 내 위치와 검색키워드를 GET 방식으로 요청하여 장소들에 대한 정보를 json으로 주되 파싱하여 KakaoSearchPlaceResponse 객체로 만들어주는 코드를 줘
-    @Headers("Authorization: KakaoAK 4d2a57ec2a45ae21cfa73a4abafe38a6")
     @GET("v2/local/search/keyword.json?sort=distance")
     fun searchPlaces(
         @Query("query") query: String,
@@ -27,7 +27,6 @@ interface RetrofitService {
 
     // 인증키는 헤더정보로
     // 내 위치와 검색키워드를 GET 방식으로 요청하여 장소들에 대한 정보를 json으로 주되 파싱하지 말고 일단 문자열로 받음
-    @Headers("Authorization: KakaoAK 4d2a57ec2a45ae21cfa73a4abafe38a6")
     @GET("v2/local/search/keyword.json?sort=distance")
     fun searchPlacesToString(
         @Query("query") query: String,
