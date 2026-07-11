@@ -32,15 +32,15 @@
                         android:id="@+id/et_search"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/bg_edit"
                         android:layout_weight="1"
                         android:hint="@string/enter_search_terms"
                         android:imeOptions="actionSearch"
                         android:inputType="text"
-                        android:paddingHorizontal="16dp"
-                        android:paddingVertical="8dp"
-                        android:drawableEnd="@drawable/ic_search"
-                        android:drawableTint="@color/gray"/>
+                        android:paddingBottom="10dp"
+                        android:drawableStart="@drawable/ic_search"
+                        android:drawableTint="@color/gray"
+                        android:drawablePadding="10dp"
+                        />
 
                     <ImageView
                         android:id="@+id/iv_refresh"
