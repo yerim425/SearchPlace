@@ -1,15 +1,17 @@
-package com.yrlee.tpsearchplaceapp.network
+package com.yrlee.tpsearchplaceapp.data.remote
 
 import android.util.Log
+import com.yrlee.tpsearchplaceapp.BuildConfig
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
-import com.yrlee.tpsearchplaceapp.BuildConfig
+
 class RetrofitHelper {
 
     companion object{
-        fun getKakaoRetrofitInstance(): Retrofit{
+
+        fun getKakaoRetrofitInstance(): Retrofit {
 
             val client = OkHttpClient.Builder()
                 .addInterceptor { chain ->
@@ -39,7 +41,7 @@ class RetrofitHelper {
             return retrofit
         }
 
-        fun getMyRetrofitInstance(): Retrofit{
+        fun getMyRetrofitInstance(): Retrofit {
             val retrofit = Retrofit.Builder().run{
                 baseUrl("http://yrlee2025.dothome.co.kr/search_place/")
                 addConverterFactory(ScalarsConverterFactory.create())

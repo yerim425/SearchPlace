@@ -13,4 +13,5 @@
     <string name="like">좋아요</string>
     <string name="withdrawal">회원 탈퇴</string>
     <string name="hello">안녕하세요</string>
+    <string name="favorite_list">좋아요 목록</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.yrlee.tpsearchplaceapp.ui.detail
 
 import android.os.Bundle
+import android.util.Log
 import android.webkit.WebChromeClient
 import android.webkit.WebViewClient
 import androidx.activity.OnBackPressedCallback
@@ -40,6 +41,7 @@ class PlaceDetailActivity : AppCompatActivity() {
                 loadUrl(place.place_url)
             }
         }
+
 
         // 디바이스의 '뒤로가기' 물리버튼을 눌렀을 때 만약, 웹뷰의 돌아갈 페이지가 있다면... 엑티비티가 종료되지 않도록//
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true){

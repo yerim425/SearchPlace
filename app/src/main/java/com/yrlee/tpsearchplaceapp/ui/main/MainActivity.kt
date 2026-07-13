@@ -1,6 +1,8 @@
 package com.yrlee.tpsearchplaceapp.ui.main
 
 import android.Manifest
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -8,6 +10,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -28,12 +31,13 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.yrlee.tpsearchplaceapp.R
-import com.yrlee.tpsearchplaceapp.network.RetrofitHelper
-import com.yrlee.tpsearchplaceapp.network.RetrofitService
+import com.yrlee.tpsearchplaceapp.data.remote.RetrofitHelper
 import com.yrlee.tpsearchplaceapp.databinding.ActivityMainBinding
 import com.yrlee.tpsearchplaceapp.model.DothomeResponse
 import com.yrlee.tpsearchplaceapp.model.KakaoSearchPlaceResponse
 import com.yrlee.tpsearchplaceapp.repository.PlaceRepository
+import com.yrlee.tpsearchplaceapp.ui.favorite.FavoriteActivity
+import com.yrlee.tpsearchplaceapp.ui.map.KakaoMapActivity
 import com.yrlee.tpsearchplaceapp.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.Call
@@ -61,12 +65,15 @@ class MainActivity : AppCompatActivity() {
     // recyclerview adapter
     lateinit var adapter: PlaceListAdapter
 
+    // fab open
+    private var isFabOpen = false
 
     // MVVM 적용
     private val viewModel: MainViewModel by viewModels()
 
     // view binding
-//    val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+    // val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+
     // data binding
     lateinit var binding: ActivityMainBinding
 
@@ -88,6 +95,17 @@ class MainActivity : AppCompatActivity() {
         }
         binding.recyclerView.adapter = adapter
 
+        // fab button click
+        binding.fabMenu.setOnClickListener {
+
+            if (isFabOpen) {
+                closeFab()
+            } else {
+                openFab()
+            }
+
+            isFabOpen = !isFabOpen
+        }
 
         // 내 위치 정보 취득에 대한 동적 퍼미션
         val permissionResult = checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -97,14 +115,18 @@ class MainActivity : AppCompatActivity() {
 
 
         // drawer 열기
-        binding.toolbar.setNavigationOnClickListener {
-            binding.drawerLayout.openDrawer(GravityCompat.START)
-        }
+//        binding.toolbar.setNavigationOnClickListener {
+//            binding.drawerLayout.openDrawer(GravityCompat.START)
+//        }
 
         // 검색어 입력 리스너
         binding.etSearch.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 viewModel.searchPlaces() // 검색 장소명 키워드로 장소들 검색
+
+                // 키보드 숨기기
+                val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(binding.etSearch.windowToken, 0)
                 true
             } else {
                 false // 액션 버튼이 클릭되었을때, 여기서 모든 처리를 소비하지 않겠다.
@@ -113,6 +135,14 @@ class MainActivity : AppCompatActivity() {
 
         // 검색어 단축 버튼들 클릭에 반응하는 작업..
         setChoiceButtonListener()
+
+
+
+        // fab 클릭 리스너 - 화면 이동
+        binding.fabFavorite.setOnClickListener { startActivity(Intent(this, FavoriteActivity::class.java)) }
+        binding.fabMap.setOnClickListener { startActivity(Intent(this, KakaoMapActivity::class.java)) }
+
+
 
 
         //-----------------------------------------------------------------------------------------
@@ -177,7 +207,57 @@ class MainActivity : AppCompatActivity() {
         viewModel.searchPlaces()
     }
 
+    // fab 메뉴 열기
+    private fun openFab() {
 
+        binding.fabFavorite.visibility = View.VISIBLE
+        binding.fabMap.visibility = View.VISIBLE
+
+        binding.fabMenu.animate()
+            .rotation(45f)
+            .setDuration(200)
+            .start()
+
+        binding.fabFavorite.animate()
+            .translationY(-50f)
+            .alpha(1f)
+            .setDuration(200)
+            .start()
+
+
+        binding.fabMap.animate()
+            .translationY(-30f)
+            .alpha(1f)
+            .setDuration(200)
+            .start()
+    }
+
+    // fab 메뉴 닫기
+    private fun closeFab() {
+
+        binding.fabMenu.animate()
+            .rotation(0f)
+            .setDuration(200)
+            .start()
+
+        binding.fabFavorite.animate()
+            .translationY(0f)
+            .alpha(0f)
+            .setDuration(200)
+            .withEndAction {
+                binding.fabFavorite.visibility = View.GONE
+            }
+            .start()
+
+        binding.fabMap.animate()
+            .translationY(0f)
+            .alpha(0f)
+            .setDuration(200)
+            .withEndAction {
+                binding.fabMap.visibility = View.GONE
+            }
+            .start()
+    }
 
 
 }

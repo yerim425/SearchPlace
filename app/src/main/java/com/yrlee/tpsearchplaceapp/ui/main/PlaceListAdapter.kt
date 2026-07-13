@@ -9,11 +9,12 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.gson.Gson
 import com.yrlee.tpsearchplaceapp.databinding.RecyclerItemListFragmentBinding
 import com.yrlee.tpsearchplaceapp.model.Place
+import com.yrlee.tpsearchplaceapp.model.PlaceUiModel
 import com.yrlee.tpsearchplaceapp.ui.detail.PlaceDetailActivity
 
-class PlaceListAdapter(private val context: Context, private val onLikeClick:(Place)->Unit) : Adapter<PlaceListAdapter.VH>(){
+class PlaceListAdapter(private val context: Context, private val onLikeClick:(PlaceUiModel)->Unit) : Adapter<PlaceListAdapter.VH>(){
 
-    private var placeList = mutableListOf<Place>()
+    private var placeList = mutableListOf<PlaceUiModel>()
     private var page = 1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -23,12 +24,13 @@ class PlaceListAdapter(private val context: Context, private val onLikeClick:(Pl
     override fun getItemCount(): Int = placeList.size
 
     override fun onBindViewHolder(holder: VH, position: Int) {
-        val place = placeList[position]
+        val place = placeList[position].place
         with(holder.binding){
             tvPlaceName.text = place.place_name
             tvDistance.text = place.distance + "m"
             tvPhone.text = place.phone
             tvAddress.text = if(place.road_address_name=="") place.address_name else place.road_address_name
+            cbFavorite.isChecked = placeList[position].isFavorite
         }
     }
 
@@ -38,23 +40,21 @@ class PlaceListAdapter(private val context: Context, private val onLikeClick:(Pl
             binding.root.setOnClickListener {
                 val intent = Intent(context, PlaceDetailActivity::class.java)
 
-                val place = placeList[layoutPosition]
+                val place = placeList[layoutPosition].place
                 val s: String = Gson().toJson(place)
                 intent.putExtra("place", s)
                 context.startActivity(intent)
             }
 
-            binding.cbFavorite.setOnCheckedChangeListener { buttonView, isChecked ->
-                if(isChecked){
-                    onLikeClick(placeList[layoutPosition])
-                }
+            binding.cbFavorite.setOnClickListener {
+                onLikeClick(placeList[layoutPosition])
             }
         }
     }
 
 
 
-    fun addPlaceList(list: List<Place>){
+    fun addPlaceList(list: List<PlaceUiModel>){
         this.placeList.addAll(list)
         notifyDataSetChanged()
     }

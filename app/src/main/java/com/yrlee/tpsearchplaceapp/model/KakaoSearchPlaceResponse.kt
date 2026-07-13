@@ -1,5 +1,7 @@
 package com.yrlee.tpsearchplaceapp.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 data class KakaoSearchPlaceResponse(
@@ -13,7 +15,9 @@ data class PlaceMeta(
     var is_end: Boolean
 )
 
+@Entity(tableName = "favorite_place")
 data class Place(
+    @PrimaryKey
     var id: String,
     var place_name: String,
     var category_name: String,
@@ -23,5 +27,5 @@ data class Place(
     @SerializedName("x") var longitude: String,
     @SerializedName("y") var latitude: String,
     var place_url: String,
-    var distance: String
+    var distance: String,
 )
