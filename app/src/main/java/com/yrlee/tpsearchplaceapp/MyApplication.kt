@@ -2,6 +2,9 @@ package com.yrlee.tpsearchplaceapp
 
 import android.app.Application
 import com.kakao.vectormap.KakaoMapSdk
+import dagger.hilt.android.HiltAndroidApp
+
+@HiltAndroidApp
 
 class MyApplication: Application() {
 
@@ -9,6 +12,6 @@ class MyApplication: Application() {
         super.onCreate()
 
         // kakao native app key 등록 및 초기화
-        KakaoMapSdk.init(this, "c3997999bab77d92b7bd0d525cdc967c")
+        KakaoMapSdk.init(this, BuildConfig.KAKAO_REST_API_KEY)
     }
 }

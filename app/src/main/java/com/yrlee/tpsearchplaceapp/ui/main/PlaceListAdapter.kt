@@ -11,7 +11,7 @@ import com.yrlee.tpsearchplaceapp.databinding.RecyclerItemListFragmentBinding
 import com.yrlee.tpsearchplaceapp.model.Place
 import com.yrlee.tpsearchplaceapp.ui.detail.PlaceDetailActivity
 
-class PlaceListAdapter(val context: Context) : Adapter<PlaceListAdapter.VH>(){
+class PlaceListAdapter(private val context: Context, private val onLikeClick:(Place)->Unit) : Adapter<PlaceListAdapter.VH>(){
 
     private var placeList = mutableListOf<Place>()
     private var page = 1
@@ -46,7 +46,7 @@ class PlaceListAdapter(val context: Context) : Adapter<PlaceListAdapter.VH>(){
 
             binding.cbFavorite.setOnCheckedChangeListener { buttonView, isChecked ->
                 if(isChecked){
-                    (context as MainActivity).insertFavorPlace(placeList[layoutPosition])
+                    onLikeClick(placeList[layoutPosition])
                 }
             }
         }

@@ -1,4 +1,4 @@
-package com.yrlee.tpsearchplaceapp.data.remote
+package com.yrlee.tpsearchplaceapp.network
 
 import android.util.Log
 import okhttp3.OkHttpClient
