@@ -11,7 +11,7 @@ object LocationUtil {
         myLongitude: Double,
         targetLatitude: Double,
         targetLongitude: Double
-    ): Float {
+    ): String {
 
         val result = FloatArray(1)
 
@@ -23,7 +23,7 @@ object LocationUtil {
             result
         )
 
-        return result[0] // meter 단위
+        return String.format(Locale.getDefault(), "%.1f", result[0]) // meter 단위
     }
 
     // 거리 단위 포켓 -> 1000m->1k

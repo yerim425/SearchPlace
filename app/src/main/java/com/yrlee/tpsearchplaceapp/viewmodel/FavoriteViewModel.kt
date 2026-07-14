@@ -12,6 +12,7 @@ import com.yrlee.tpsearchplaceapp.repository.LocationRepository
 import com.yrlee.tpsearchplaceapp.util.LocationUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -22,7 +23,7 @@ class FavoriteViewModel @Inject constructor(
 ): ViewModel() {
 
     // 좋아요 개수
-    val count = MutableLiveData(0)
+    val count = MutableLiveData("0")
 
     // 좋아요 장소 리스트
     val placeList = MutableLiveData<MutableList<FavoriteUiModel>>(mutableListOf())
@@ -33,37 +34,34 @@ class FavoriteViewModel @Inject constructor(
     private val myLocation = MutableLiveData<Location>()
 
     fun loadFavoritePlaces() {
+        loading.value = true
 
         viewModelScope.launch {
 
-            loading.value = true
-
-            // 현재 위치 가져오기
             val location = locationRepository.getCurrentLocation()
             myLocation.value = location
 
-            favoriteRepository.getAll().collect { favorites ->
+            val favorites = favoriteRepository.getAll().first()
 
-                val list = favorites.map { place ->
-                    val distance = LocationUtil.calculateDistance(
-                        location.latitude,
-                        location.longitude,
-                        place.latitude.toDouble(),
-                        place.longitude.toDouble()
-                    )
-                    FavoriteUiModel(
-                        place,
-                        distance.toString()
-                    )
-                }
+            val list = favorites.map { place ->
+                val distance = LocationUtil.calculateDistance(
+                    location.latitude,
+                    location.longitude,
+                    place.latitude.toDouble(),
+                    place.longitude.toDouble()
+                )
 
-                placeList.value = list.toMutableList()
-                count.value = list.size
-
+                FavoriteUiModel(
+                    place,
+                    distance
+                )
             }
-        }
-        loading.value = false
 
+            placeList.value = list.toMutableList()
+            count.value = list.size.toString()
+
+            loading.value = false
+        }
     }
 
     fun likePlace(placeId: String) {
@@ -75,7 +73,7 @@ class FavoriteViewModel @Inject constructor(
                 ?.filter { it.place.id != placeId }
                 ?.toMutableList()
 
-            count.value = placeList.value?.size ?: 0
+            count.value = placeList.value?.size.toString()
         }
     }
 

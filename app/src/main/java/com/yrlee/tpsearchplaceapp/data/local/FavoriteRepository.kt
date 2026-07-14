@@ -33,7 +33,7 @@ class FavoriteRepository @Inject constructor(
             road_address_name = p.road_address_name,
             longitude = p.longitude,
             latitude = p.latitude,
-            place_url = p.place_name
+            place_url = p.place_url
         )
         dao.insert(fp)
     }

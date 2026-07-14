@@ -41,6 +41,12 @@ class MainViewModel  @Inject constructor(
             favoriteRepository.getFavoriteIds().collect { ids ->
                 favoriteIds.clear()
                 favoriteIds.addAll(ids)
+
+                placeList.value?.forEach { item ->
+                    item.isFavorite = favoriteIds.contains(item.place.id)
+                }
+
+                placeList.value = placeList.value
             }
         }
     }
@@ -113,15 +119,6 @@ class MainViewModel  @Inject constructor(
             placeList.value = placeList.value
         }
     }
-
-    // 내 위치 가져오면 장소 검색
-//    fun requestMyLocation(){
-//
-//        viewModelScope.launch {
-//            myLocation.value = locationRepository.getCurrentLocation()
-//            //searchPlaces() // 내 위치를 찾았으니 카카오 로컬(장소) 검색 시작
-//        }
-//    }
 
     // 다음 페이지
     fun nextPage() {

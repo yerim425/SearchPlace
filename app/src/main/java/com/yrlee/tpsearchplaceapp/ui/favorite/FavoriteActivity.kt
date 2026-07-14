@@ -17,14 +17,11 @@ import com.yrlee.tpsearchplaceapp.databinding.ActivityFavoriteBinding
 import com.yrlee.tpsearchplaceapp.viewmodel.FavoriteViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class FavoriteActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityFavoriteBinding
     private val viewModel: FavoriteViewModel by viewModels()
-
-    lateinit var longitude: String
-    lateinit var latitude: String
-
     lateinit var adapter: FavoriteListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,20 +36,17 @@ class FavoriteActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        viewModel.loadFavoritePlaces()
+
         adapter = FavoriteListAdapter(this){
             viewModel.likePlace(it)
         }
-
-        viewModel.loadFavoritePlaces()
+        binding.rv.adapter = adapter
 
         viewModel.placeList.observe(this, {
-            adapter.addPlaceList(it)
+            adapter.setItemList(it)
         })
 
-        // 뒤로가기
-        binding.ivBack.setOnClickListener {
-            finish()
-        }
     }
 
 }

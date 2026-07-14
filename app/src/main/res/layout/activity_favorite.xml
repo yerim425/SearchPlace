@@ -12,7 +12,8 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.favorite.FavoriteActivity">
+        tools:context=".ui.favorite.FavoriteActivity"
+        android:background="@drawable/bg_gradient">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layout_top"
@@ -21,38 +22,28 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:padding="16dp"
-            android:background="@color/blue">
-
-            <ImageView
-                android:id="@+id/iv_back"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/ic_back"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+            android:padding="20dp">
 
             <TextView
                 android:id="@+id/tv_like"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/iv_back"
                 android:text="@string/like"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 android:layout_marginTop="48dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/iv_back"/>
+                app:layout_constraintTop_toTopOf="parent"/>
 
             <TextView
                 android:id="@+id/tv_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{vm.count}"
-                android:textColor="@color/pink_dark"
+                android:textColor="@color/blue_dark"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                android:layout_marginStart="4dp"
+                android:layout_marginStart="8dp"
                 app:layout_constraintStart_toEndOf="@id/tv_like"
                 app:layout_constraintBottom_toBottomOf="@id/tv_like"/>
 
@@ -74,7 +65,7 @@
             android:id="@+id/progress_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:indeterminateTint="@color/pink_dark"
+            android:indeterminateTint="@color/blue_dark"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
