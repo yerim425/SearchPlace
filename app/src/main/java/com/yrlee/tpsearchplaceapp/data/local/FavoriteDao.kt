@@ -12,13 +12,10 @@ import kotlinx.coroutines.flow.Flow
 interface FavoriteDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(place: Place)
-
-    @Delete
-    suspend fun delete(place: Place)
+    suspend fun insert(place: FavoritePlace)
 
     @Query("SELECT * FROM favorite_place")
-    fun getAll(): Flow<List<Place>>
+    fun getAll(): Flow<List<FavoritePlace>>
 
     @Query("SELECT id FROM favorite_place")
     fun getAllIds(): Flow<List<String>>

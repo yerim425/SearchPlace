@@ -15,7 +15,6 @@ data class PlaceMeta(
     var is_end: Boolean
 )
 
-@Entity(tableName = "favorite_place")
 data class Place(
     @PrimaryKey
     var id: String,

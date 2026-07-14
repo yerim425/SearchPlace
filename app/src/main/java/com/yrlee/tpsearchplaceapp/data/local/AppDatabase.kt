@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import com.yrlee.tpsearchplaceapp.model.Place
 
 @Database(
-    entities = [Place::class],
+    entities = [FavoritePlace::class],
     version = 1,
     exportSchema = false
 )

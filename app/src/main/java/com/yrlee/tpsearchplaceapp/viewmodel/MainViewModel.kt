@@ -1,5 +1,6 @@
 package com.yrlee.tpsearchplaceapp.viewmodel
 
+import android.content.Intent
 import android.location.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -45,13 +46,20 @@ class MainViewModel  @Inject constructor(
     }
 
     fun searchPlaces(){
+
         viewModelScope.launch {
             loading.value = true
 
+            if (myLocation.value == null) {
+                myLocation.value = locationRepository.getCurrentLocation()
+            }
+
+            val location = myLocation.value ?: return@launch
+
             // query 데이터
             val searchQuery = searchQuery.value  ?: ""
-            val lng = myLocation.value.longitude.toString()
-            val lat = myLocation.value.latitude.toString()
+            val lng = location.longitude.toString()
+            val lat = location.latitude.toString()
             val page = page.value ?: 1
 
             // 카카오 장소 검색 API 호출
@@ -107,16 +115,15 @@ class MainViewModel  @Inject constructor(
     }
 
     // 내 위치 가져오면 장소 검색
-    fun requestMyLocation(){
+//    fun requestMyLocation(){
+//
+//        viewModelScope.launch {
+//            myLocation.value = locationRepository.getCurrentLocation()
+//            //searchPlaces() // 내 위치를 찾았으니 카카오 로컬(장소) 검색 시작
+//        }
+//    }
 
-        viewModelScope.launch {
-            myLocation.value = locationRepository.getCurrentLocation()
-            searchPlaces() // 내 위치를 찾았으니 카카오 로컬(장소) 검색 시작
-        }
-    }
-
-
-    // 다음 페이즈
+    // 다음 페이지
     fun nextPage() {
 
         page.value = (page.value ?: 1) + 1
@@ -134,5 +141,6 @@ class MainViewModel  @Inject constructor(
         searchPlaces()
     }
 
+    fun getMyLocation() = myLocation.value
 
 }

@@ -26,19 +26,7 @@
             android:name=".ui.map.KakaoMapActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.main.MapActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.main.LikeActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.detail.PlaceDetailActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.login.SignupActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.login.LoginActivity"
             android:exported="false" />
         <activity
             android:name=".ui.intro.IntroActivity"

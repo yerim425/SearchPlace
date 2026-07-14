@@ -7,8 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.gson.Gson
-import com.yrlee.tpsearchplaceapp.databinding.RecyclerItemListFragmentBinding
-import com.yrlee.tpsearchplaceapp.model.Place
+import com.yrlee.tpsearchplaceapp.databinding.RvItemPlaceBinding
 import com.yrlee.tpsearchplaceapp.model.PlaceUiModel
 import com.yrlee.tpsearchplaceapp.ui.detail.PlaceDetailActivity
 
@@ -18,7 +17,7 @@ class PlaceListAdapter(private val context: Context, private val onLikeClick:(Pl
     private var page = 1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        return VH(RecyclerItemListFragmentBinding.inflate(LayoutInflater.from(context), parent, false))
+        return VH(RvItemPlaceBinding.inflate(LayoutInflater.from(context), parent, false))
     }
 
     override fun getItemCount(): Int = placeList.size
@@ -34,7 +33,7 @@ class PlaceListAdapter(private val context: Context, private val onLikeClick:(Pl
         }
     }
 
-    inner class VH(val binding: RecyclerItemListFragmentBinding): ViewHolder(binding.root){
+    inner class VH(val binding: RvItemPlaceBinding): ViewHolder(binding.root){
 
         init {
             binding.root.setOnClickListener {

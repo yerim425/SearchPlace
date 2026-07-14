@@ -17,11 +17,11 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resumeWithException
 
+
 class LocationRepository @Inject constructor(
     @ApplicationContext
     private val context: Context
 ){
-
     // 내 위치 정보를 얻어오기 위한 클래스의 참조변수 [위치정보제공자(gps, network, passive)를 사용하는 객체]
     val client : FusedLocationProviderClient  = LocationServices.getFusedLocationProviderClient(context)
 

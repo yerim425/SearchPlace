@@ -47,41 +47,33 @@ import retrofit2.Response
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    // 내 위치 얻어오기 [개인정보이기에 동적퍼미션 필요]
-    // 내 위치 검색은 Google Fused Location API 사용 [라이브러리 추가 필요 : play-services-location]
-
-    // 내 위치 정보를 얻어오기 위한 클래스의 참조변수 [위치정보제공자(gps, network, passive)를 사용하는 객체]
-//    val locationProviderClient : FusedLocationProviderClient by lazy { LocationServices.getFusedLocationProviderClient(this) }
 
     // 카카오의 로컬 검색 API를 사용하는 데 필요한 요청 파라미터
     // 1. 검색장소명
     var searchQuery: String = "화장실"
-    // 2. 현재 내 위치 정보(위도, 경도 정보를 멤버로 보유한 객체)
-    var myLocation: Location? = null
 
-    // 카카오 장소 검색 응답결과 json을 분석하여 만들어진 객체 참조변수
-    var searchPlaceResponse: KakaoSearchPlaceResponse? = null
-
-    // recyclerview adapter
     lateinit var adapter: PlaceListAdapter
 
     // fab open
     private var isFabOpen = false
 
-    // MVVM 적용
-    private val viewModel: MainViewModel by viewModels()
+    // MVVM + DataBinding 적용
+    lateinit var binding: ActivityMainBinding
+    private val viewModel: MainViewModel by viewModels() // viewModels()
 
     // view binding
     // val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
-    // data binding
-    lateinit var binding: ActivityMainBinding
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // MVVM + DataBinding 구조에서 Activity와 ViewModel을 연결
+        // 1) XML 레이아웃을 inflate하면서 자동으로 Binding 객체를 생성 ... activity_main -> ActivityMainBinding 객체를 생성
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        // 2) XML 변수(vm)에 ViewModel 주입 ... XML에서 viewModel의 값이나 함수 등 사용 가능해짐
         binding.vm = viewModel
+        // 3) DataBinding이 LiveData/Flow 변화를 감지하도록 관찰 생명주기 연결 ... 데이터 관찰 가능해짐
         binding.lifecycleOwner = this
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -90,6 +82,7 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        // adapter 생성 및 등록
         adapter = PlaceListAdapter(this@MainActivity){
             viewModel.likePlace(it)
         }
@@ -103,15 +96,17 @@ class MainActivity : AppCompatActivity() {
             } else {
                 openFab()
             }
-
             isFabOpen = !isFabOpen
         }
+
+        // 내 위치 얻어오기 [개인정보이기에 동적퍼미션 필요]
+        // 내 위치 검색은 Google Fused Location API 사용 [라이브러리 추가 필요 : play-services-location]
 
         // 내 위치 정보 취득에 대한 동적 퍼미션
         val permissionResult = checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
         if(permissionResult==PackageManager.PERMISSION_DENIED)
             permissionResultLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION) // 퍼미션 요청
-        else viewModel.requestMyLocation()
+        else viewModel.searchPlaces()
 
 
         // drawer 열기
@@ -137,12 +132,13 @@ class MainActivity : AppCompatActivity() {
         setChoiceButtonListener()
 
 
-
         // fab 클릭 리스너 - 화면 이동
-        binding.fabFavorite.setOnClickListener { startActivity(Intent(this, FavoriteActivity::class.java)) }
-        binding.fabMap.setOnClickListener { startActivity(Intent(this, KakaoMapActivity::class.java)) }
-
-
+        binding.fabFavorite.setOnClickListener {
+            startActivity(Intent(this, FavoriteActivity::class.java))
+        }
+        binding.fabMap.setOnClickListener {
+            startActivity(Intent(this, KakaoMapActivity::class.java))
+        }
 
 
         //-----------------------------------------------------------------------------------------
@@ -159,7 +155,7 @@ class MainActivity : AppCompatActivity() {
     
     // 퍼미션요청 작업을 대신 수행하는 대행사 객체를 등록(생성)
     val permissionResultLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()){
-        if(it) viewModel.requestMyLocation()
+        if(it) viewModel.searchPlaces()
         else Toast.makeText(this, "내 위치정보를 제공하지 않아 검색기능 사용이 제한됩니다.", Toast.LENGTH_SHORT).show()
     }
 
