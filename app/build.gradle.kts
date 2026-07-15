@@ -30,6 +30,12 @@ android {
             "KAKAO_REST_API_KEY",
             "\"${localProperties.getProperty("KAKAO_REST_API_KEY")}\""
         )
+        buildConfigField(
+            "String",
+            "KAKAO_NATIVE_APP_KEY",
+            "\"${localProperties.getProperty("KAKAO_NATIVE_APP_KEY")}\""
+        )
+        manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = localProperties.getProperty("KAKAO_NATIVE_APP_KEY")
     }
 
     buildTypes {
@@ -71,6 +77,9 @@ dependencies {
 
     // swipe refresh layout
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
+
+    implementation("com.kakao.maps.open:android:2.x.x")
 
 
     implementation(libs.androidx.core.ktx)

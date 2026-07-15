@@ -3,7 +3,7 @@
     <!-- 눌렀을 때 -->
     <item
         android:state_pressed="true"
-        android:color="@color/blue"/>
+        android:color="@color/blue" />
 
     <!-- 기본 -->
     <item

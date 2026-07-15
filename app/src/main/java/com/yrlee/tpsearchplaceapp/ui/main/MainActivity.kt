@@ -31,7 +31,6 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.yrlee.tpsearchplaceapp.R
-import com.yrlee.tpsearchplaceapp.data.remote.RetrofitHelper
 import com.yrlee.tpsearchplaceapp.databinding.ActivityMainBinding
 import com.yrlee.tpsearchplaceapp.model.DothomeResponse
 import com.yrlee.tpsearchplaceapp.model.KakaoSearchPlaceResponse

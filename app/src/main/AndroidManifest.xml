@@ -24,7 +24,12 @@
             android:exported="false" />
         <activity
             android:name=".ui.map.KakaoMapActivity"
-            android:exported="false" />
+            android:exported="false">
+            <meta-data
+                android:name="com.kakao.vectormap.AppKey"
+                android:value="${KAKAO_NATIVE_APP_KEY}"
+                />
+        </activity>
         <activity
             android:name=".ui.detail.PlaceDetailActivity"
             android:exported="false" />

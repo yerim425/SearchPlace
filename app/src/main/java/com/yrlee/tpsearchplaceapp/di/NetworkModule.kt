@@ -1,5 +1,6 @@
 package com.yrlee.tpsearchplaceapp.di
 
+import android.util.Log
 import com.yrlee.tpsearchplaceapp.BuildConfig
 import com.yrlee.tpsearchplaceapp.data.remote.KakaoApiService
 import com.yrlee.tpsearchplaceapp.data.remote.MyApiService
@@ -34,7 +35,9 @@ object NetworkModule {
                         "KakaoAK ${BuildConfig.KAKAO_REST_API_KEY}"
                     )
                     .build()
-
+                Log.d("HEADER", request.header("Authorization") ?: "null")
+                Log.d("REST_KEY", BuildConfig.KAKAO_REST_API_KEY)
+                Log.d("NATIVE_KEY", BuildConfig.KAKAO_NATIVE_APP_KEY) // 있다면
                 chain.proceed(request)
             }
             .build()

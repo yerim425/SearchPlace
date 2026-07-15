@@ -1,12 +1,11 @@
 package com.yrlee.tpsearchplaceapp.viewmodel
 
-import android.content.Intent
 import android.location.Location
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yrlee.tpsearchplaceapp.data.local.FavoriteRepository
-import com.yrlee.tpsearchplaceapp.model.Place
 import com.yrlee.tpsearchplaceapp.model.PlaceUiModel
 import com.yrlee.tpsearchplaceapp.repository.LocationRepository
 import com.yrlee.tpsearchplaceapp.repository.PlaceRepository
@@ -15,42 +14,29 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-// 메인 화면 데이터를 관리하는 뷰모델
-class MainViewModel  @Inject constructor(
-    private val locationRepository: LocationRepository,
+class KakaoMapViewModel @Inject constructor(
     private val placeRepository: PlaceRepository,
+    private val locationRepository: LocationRepository,
     private val favoriteRepository: FavoriteRepository
-) : ViewModel(){
+): ViewModel() {
 
-    val placeList = MutableLiveData<MutableList<PlaceUiModel>>(mutableListOf()) // 장소 리스트
+    var _placeList = MutableLiveData<MutableList<PlaceUiModel>>()
+    val placeList: LiveData<MutableList<PlaceUiModel>> = _placeList
 
     private val favoriteIds = mutableSetOf<String>()
+    val searchQuery = MutableLiveData("화장실")
+    val loading = MutableLiveData(false)
 
-    val myLocation = MutableLiveData<Location>() // 내 위치
+    private val myLocation = MutableLiveData<Location>()
 
-    val searchQuery = MutableLiveData<String>("화장실") // 검색어
-    val page = MutableLiveData<Int>(1) // 현재 페이지
-
-    val loading = MutableLiveData(false) // 로딩 여부
-
-    val count = MutableLiveData("") // 아이템개수/전체개수
-
-    init {
-        // 내 좋아요 장소 id 목록 가져오기
+    init{
         viewModelScope.launch {
-            favoriteRepository.getFavoriteIds().collect { ids ->
+            favoriteRepository.getFavoriteIds().collect { ids->
                 favoriteIds.clear()
                 favoriteIds.addAll(ids)
-
-//                placeList.value?.forEach { item ->
-//                    item.isFavorite = favoriteIds.contains(item.place.id)
-//                }
-//
-//                placeList.value = placeList.value
             }
         }
     }
-
     fun searchPlaces(){
 
         viewModelScope.launch {
@@ -66,7 +52,7 @@ class MainViewModel  @Inject constructor(
             val searchQuery = searchQuery.value  ?: ""
             val lng = location.longitude.toString()
             val lat = location.latitude.toString()
-            val page = page.value ?: 1
+            val page = 1
 
             // 카카오 장소 검색 API 호출
             val response = placeRepository.searchPlace(searchQuery, lng, lat, page)
@@ -86,58 +72,17 @@ class MainViewModel  @Inject constructor(
                 list.add(place)
             }
 
-            placeList.value = list
-
-            count.value = "${list.size}/${response?.meta?.total_count ?: 0}"
+            _placeList.value = list
 
             loading.value = false
         }
     }
 
-    fun likePlace(item: PlaceUiModel) {
-
-
+    fun refresh() {
         viewModelScope.launch {
-
-            if (favoriteIds.contains(item.place.id)) {
-
-                favoriteRepository.delete(item.place.id)
-
-                favoriteIds.remove(item.place.id)
-
-                item.isFavorite = false
-
-            } else {
-
-                favoriteRepository.insert(item.place)
-
-                favoriteIds.add(item.place.id)
-
-                item.isFavorite = true
-            }
-
-            placeList.value = placeList.value
+            myLocation.value = locationRepository.getCurrentLocation()
+            searchPlaces()
         }
     }
-
-    // 다음 페이지
-    fun nextPage() {
-
-        page.value = (page.value ?: 1) + 1
-
-        searchPlaces()
-    }
-
-    // 새로 검색
-    fun searchNewPlace() {
-
-        page.value = 1
-
-        placeList.value = mutableListOf()
-
-        searchPlaces()
-    }
-
-    fun getMyLocation() = myLocation.value
 
 }

@@ -22,7 +22,7 @@
         android:maxLines="1"
         android:ellipsize="end"
         android:gravity="start"
-        android:text="예림 님"
+        android:text="님"
         android:textSize="24sp"
         android:textStyle="bold"
         android:layout_marginTop="8dp"/>

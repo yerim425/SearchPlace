@@ -5,7 +5,6 @@ import com.yrlee.tpsearchplaceapp.data.remote.MyApiService
 import com.yrlee.tpsearchplaceapp.model.DothomeResponse
 import com.yrlee.tpsearchplaceapp.model.KakaoSearchPlaceResponse
 import com.yrlee.tpsearchplaceapp.model.Place
-import com.yrlee.tpsearchplaceapp.data.remote.RetrofitHelper
 import jakarta.inject.Inject
 import jakarta.inject.Named
 import retrofit2.Call
