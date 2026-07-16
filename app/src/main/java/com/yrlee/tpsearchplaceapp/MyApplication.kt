@@ -12,6 +12,6 @@ class MyApplication: Application() {
         super.onCreate()
 
         // kakao native app key 등록 및 초기화
-        KakaoMapSdk.init(this, BuildConfig.KAKAO_REST_API_KEY)
+        KakaoMapSdk.init(this, BuildConfig.KAKAO_NATIVE_APP_KEY)
     }
 }

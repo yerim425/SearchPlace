@@ -65,7 +65,9 @@ android {
 
 dependencies {
 
+//    implementation("com.kakao.maps.open:android:2.12.8")
     implementation("com.kakao.maps.open:android:2.12.8")
+    implementation("com.kakao.sdk:v2-user:2.21.6")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.2")
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
@@ -79,7 +81,7 @@ dependencies {
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
 
-    implementation("com.kakao.maps.open:android:2.x.x")
+//    implementation("com.kakao.maps.open:android:2.x.x")
 
 
     implementation(libs.androidx.core.ktx)

@@ -20,16 +20,18 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".ui.favorite.FavoriteActivity"
+            android:name=".ui.map.KakaoMapActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.map.KakaoMapActivity"
-            android:exported="false">
-            <meta-data
-                android:name="com.kakao.vectormap.AppKey"
-                android:value="${KAKAO_NATIVE_APP_KEY}"
-                />
-        </activity>
+            android:name=".ui.favorite.FavoriteActivity"
+            android:exported="false" /> <!-- <activity -->
+        <!-- android:name=".ui.map.KakaoMapActivity" -->
+        <!-- android:exported="false"> -->
+        <!-- <meta-data -->
+        <!-- android:name="com.kakao.vectormap.AppKey" -->
+        <!-- android:value="${KAKAO_NATIVE_APP_KEY}" -->
+        <!-- /> -->
+        <!-- </activity> -->
         <activity
             android:name=".ui.detail.PlaceDetailActivity"
             android:exported="false" />

@@ -2,6 +2,7 @@ package com.yrlee.tpsearchplaceapp.viewmodel
 
 import android.content.Intent
 import android.location.Location
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,6 +14,7 @@ import com.yrlee.tpsearchplaceapp.repository.PlaceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 @HiltViewModel
 // 메인 화면 데이터를 관리하는 뷰모델
@@ -51,46 +53,106 @@ class MainViewModel  @Inject constructor(
         }
     }
 
-    fun searchPlaces(){
+//    fun searchPlaces(){
+//
+//        viewModelScope.launch {
+//            loading.value = true
+//
+//            if (myLocation.value == null) {
+//                myLocation.value = locationRepository.getCurrentLocation()
+//            }
+//
+//            val location = myLocation.value ?: return@launch
+//
+//            // query 데이터
+//            val searchQuery = searchQuery.value  ?: ""
+//            val lng = location.longitude.toString()
+//            val lat = location.latitude.toString()
+//            val page = page.value ?: 1
+//
+//            // 카카오 장소 검색 API 호출
+//            val response = placeRepository.searchPlace(searchQuery, lng, lat, page)
+//            val documents = response?.documents ?: emptyList() //  장소 검색 결과
+//
+//            val list = placeList.value ?: mutableListOf<PlaceUiModel>()
+//            if (page == 1) {
+//                list.clear()
+//            }
+//
+//            documents.forEach {
+//                val place = PlaceUiModel(
+//                    it,
+//                    favoriteIds.contains(it.id),
+//                    0 // myServerDB에서 좋아요 개수 읽어온 값
+//                )
+//                list.add(place)
+//            }
+//
+//            placeList.value = list
+//
+//            count.value = "${list.size}/${response?.meta?.total_count ?: 0}"
+//
+//            loading.value = false
+//        }
+//    }
+
+//    import android.util.Log
+//    import retrofit2.HttpException
+
+    fun searchPlaces() {
 
         viewModelScope.launch {
-            loading.value = true
 
-            if (myLocation.value == null) {
-                myLocation.value = locationRepository.getCurrentLocation()
+            try {
+                loading.value = true
+
+                if (myLocation.value == null) {
+                    myLocation.value = locationRepository.getCurrentLocation()
+                }
+
+                val location = myLocation.value ?: return@launch
+
+                val searchQuery = searchQuery.value ?: ""
+                val lng = location.longitude.toString()
+                val lat = location.latitude.toString()
+                val page = page.value ?: 1
+
+                val response = placeRepository.searchPlace(searchQuery, lng, lat, page)
+                val documents = response?.documents ?: emptyList()
+
+                val list = placeList.value ?: mutableListOf()
+
+                if (page == 1) {
+                    list.clear()
+                }
+
+                documents.forEach {
+                    list.add(
+                        PlaceUiModel(
+                            it,
+                            favoriteIds.contains(it.id),
+                            0
+                        )
+                    )
+                }
+
+                placeList.value = list
+                count.value = "${list.size}/${response?.meta?.total_count ?: 0}"
+
+            } catch (e: HttpException) {
+
+                Log.e("HTTP_CODE", e.code().toString())
+                Log.e("HTTP_BODY", e.response()?.errorBody()?.string() ?: "no body")
+
+            } catch (e: Exception) {
+
+                Log.e("ERROR", Log.getStackTraceString(e))
+
+            } finally {
+
+                loading.value = false
+
             }
-
-            val location = myLocation.value ?: return@launch
-
-            // query 데이터
-            val searchQuery = searchQuery.value  ?: ""
-            val lng = location.longitude.toString()
-            val lat = location.latitude.toString()
-            val page = page.value ?: 1
-
-            // 카카오 장소 검색 API 호출
-            val response = placeRepository.searchPlace(searchQuery, lng, lat, page)
-            val documents = response?.documents ?: emptyList() //  장소 검색 결과
-
-            val list = placeList.value ?: mutableListOf<PlaceUiModel>()
-            if (page == 1) {
-                list.clear()
-            }
-
-            documents.forEach {
-                val place = PlaceUiModel(
-                    it,
-                    favoriteIds.contains(it.id),
-                    0 // myServerDB에서 좋아요 개수 읽어온 값
-                )
-                list.add(place)
-            }
-
-            placeList.value = list
-
-            count.value = "${list.size}/${response?.meta?.total_count ?: 0}"
-
-            loading.value = false
         }
     }
 

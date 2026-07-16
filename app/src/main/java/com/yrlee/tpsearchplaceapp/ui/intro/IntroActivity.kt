@@ -4,14 +4,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.yrlee.tpsearchplaceapp.R
-import com.yrlee.tpsearchplaceapp.databinding.ActivityIntroBinding
 import com.yrlee.tpsearchplaceapp.ui.main.MainActivity
-
+import com.kakao.sdk.common.util.Utility
 class IntroActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,7 +23,7 @@ class IntroActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
+        Log.d("KEY_HASH", Utility.getKeyHash(this))
         Handler(Looper.getMainLooper()).postDelayed({
             startActivity(Intent(this, MainActivity::class.java))
             finish()

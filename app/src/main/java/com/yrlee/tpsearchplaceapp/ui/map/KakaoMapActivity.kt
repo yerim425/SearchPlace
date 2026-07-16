@@ -19,6 +19,8 @@ import com.kakao.vectormap.MapView
 import com.kakao.vectormap.label.LabelLayer
 import com.kakao.vectormap.label.LabelManager
 import com.kakao.vectormap.label.LabelOptions
+import com.kakao.vectormap.label.LabelStyle
+import com.kakao.vectormap.label.LabelStyles
 import com.yrlee.tpsearchplaceapp.R
 import com.yrlee.tpsearchplaceapp.databinding.ActivityKakaoMapBinding
 import com.yrlee.tpsearchplaceapp.model.PlaceUiModel
@@ -38,6 +40,7 @@ class KakaoMapActivity : AppCompatActivity() {
     // cluster
     lateinit var labelManager: LabelManager
     lateinit var labelLayer: LabelLayer
+    lateinit var labelStyles: LabelStyles
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,23 +56,23 @@ class KakaoMapActivity : AppCompatActivity() {
             insets
         }
 
-        binding.kakaoMapView.start(object : MapLifeCycleCallback(){
-            override fun onMapDestroy() {
-                TODO("Not yet implemented")
-            }
-
-            override fun onMapError(p0: Exception?) {
-                Log.e("KakaoMap", "Map Error", p0)
-            }
-        }, object: KakaoMapReadyCallback(){
-            override fun onMapReady(p0: KakaoMap) {
-                kakaoMap = p0
-                initLabel() // 클러스터
-                observerPlace()
-                viewModel.searchPlaces()
-            }
-
-        })
+//        binding.kakaoMapView.start(object : MapLifeCycleCallback(){
+//            override fun onMapDestroy() {
+//                TODO("Not yet implemented")
+//            }
+//
+//            override fun onMapError(p0: Exception?) {
+//                Log.e("KakaoMap", "Map Error", p0)
+//            }
+//        }, object: KakaoMapReadyCallback(){
+//            override fun onMapReady(p0: KakaoMap) {
+//                kakaoMap = p0
+//                initLabel() // 클러스터
+//                observerPlace()
+//                viewModel.searchPlaces()
+//            }
+//
+//        })
 
         // 검색어 입력
         binding.etSearch.setOnEditorActionListener { v, actionId, event ->
@@ -86,10 +89,16 @@ class KakaoMapActivity : AppCompatActivity() {
         }
     }
 
-    private fun initLabel(){
+    private fun initLabel() {
+
         labelManager = kakaoMap.labelManager!!
         labelLayer = labelManager.layer!!
 
+        val style = LabelStyle.from(R.drawable.ic_pin)
+
+        labelStyles = labelManager.addLabelStyles(
+            LabelStyles.from(style)
+        )!!
     }
 
     private fun observerPlace(){
@@ -107,7 +116,7 @@ class KakaoMapActivity : AppCompatActivity() {
                     it.place.latitude.toDouble(),
                     it.place.longitude.toDouble()
                 )
-            )
+            ).setStyles(labelStyles)
 
             labelLayer.addLabel(option)
         }
