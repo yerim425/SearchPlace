@@ -27,7 +27,8 @@ class KakaoMapViewModel @Inject constructor(
     val searchQuery = MutableLiveData("화장실")
     val loading = MutableLiveData(false)
 
-    private val myLocation = MutableLiveData<Location>()
+    private val _myLocation = MutableLiveData<Location>()
+    val myLocation: LiveData<Location> = _myLocation
 
     init{
         viewModelScope.launch {
@@ -42,11 +43,11 @@ class KakaoMapViewModel @Inject constructor(
         viewModelScope.launch {
             loading.value = true
 
-            if (myLocation.value == null) {
-                myLocation.value = locationRepository.getCurrentLocation()
+            if (_myLocation.value == null) {
+                _myLocation.value = locationRepository.getCurrentLocation()
             }
 
-            val location = myLocation.value ?: return@launch
+            val location = _myLocation.value ?: return@launch
 
             // query 데이터
             val searchQuery = searchQuery.value  ?: ""
@@ -80,7 +81,7 @@ class KakaoMapViewModel @Inject constructor(
 
     fun refresh() {
         viewModelScope.launch {
-            myLocation.value = locationRepository.getCurrentLocation()
+            _myLocation.value = locationRepository.getCurrentLocation()
             searchPlaces()
         }
     }

@@ -2,65 +2,78 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <data>
 
-        <import type="android.view.View"/>
+        <import type="android.view.View" />
 
         <variable
             name="vm"
-            type="com.yrlee.tpsearchplaceapp.viewmodel.KakaoMapViewModel"/>
+            type="com.yrlee.tpsearchplaceapp.viewmodel.KakaoMapViewModel" />
 
     </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.map.KakaoMapActivity">
 
+
+        <com.kakao.vectormap.MapView
+            android:id="@+id/kakaoMapView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
         <LinearLayout
             android:id="@+id/layout_top"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@android:color/transparent"
-            android:orientation="horizontal"
             android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
                 android:id="@+id/iv_back"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@drawable/ic_back"
-                android:layout_marginHorizontal="16dp"
-                android:background="@drawable/bg_pink"
                 android:layout_gravity="center"
+                android:layout_marginHorizontal="16dp"
+                android:adjustViewBounds="true"
+                android:background="@drawable/bg_pink"
                 android:padding="8dp"
-                android:adjustViewBounds="true"/>
+                android:src="@drawable/ic_back" />
 
             <EditText
                 android:id="@+id/et_search"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_weight="1"
+                android:background="@drawable/bg_pink"
                 android:hint="@string/enter_search_terms"
                 android:imeOptions="actionSearch"
                 android:inputType="text"
-                android:text="@={vm.searchQuery}"
-                android:background="@drawable/bg_pink"
+                android:paddingHorizontal="16dp"
                 android:paddingVertical="8dp"
-                android:paddingHorizontal="16dp"/>
+                android:text="@={vm.searchQuery}" />
 
             <ImageView
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_marginHorizontal="16dp"
-                android:src="@drawable/baseline_refresh_24"
-                app:tint="@color/black"
                 android:background="@drawable/bg_pink"
+                android:onClick="@{()->vm.refresh()}"
                 android:padding="4dp"
-                android:onClick="@{()->vm.refresh()}"/>
+                android:src="@drawable/baseline_refresh_24"
+                app:tint="@color/black" />
         </LinearLayout>
 
 
@@ -68,27 +81,18 @@
             android:id="@+id/scroll_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:background="@android:color/transparent"
             android:padding="4dp"
             android:scrollbars="none"
-            android:background="@android:color/transparent"
-            android:layout_marginHorizontal="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/layout_top"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/layout_top">
 
             <include
                 android:id="@+id/choice_layout"
                 layout="@layout/choice_list" />
         </HorizontalScrollView>
-
-        <!--        <com.kakao.vectormap.MapView-->
-        <!--            android:id="@+id/kakaoMapView"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="match_parent"-->
-        <!--            app:layout_constraintStart_toStartOf="parent"-->
-        <!--            app:layout_constraintTop_toTopOf="parent"-->
-        <!--            app:layout_constraintEnd_toEndOf="parent"-->
-        <!--            app:layout_constraintBottom_toBottomOf="parent"/>-->
 
         <ProgressBar
             android:id="@+id/progress_bar"
@@ -96,11 +100,13 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:indeterminateTint="@color/pink_dark"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:visibility="@{vm.loading ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:visibility="@{vm.loading ? View.VISIBLE : View.GONE}" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

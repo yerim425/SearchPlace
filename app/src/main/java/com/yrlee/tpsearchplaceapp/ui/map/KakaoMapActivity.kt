@@ -1,6 +1,7 @@
 package com.yrlee.tpsearchplaceapp.ui.map
 
 import android.content.Context
+import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.inputmethod.EditorInfo
@@ -16,7 +17,10 @@ import com.kakao.vectormap.KakaoMapReadyCallback
 import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
+import com.kakao.vectormap.camera.CameraUpdateFactory
+import com.kakao.vectormap.label.Label
 import com.kakao.vectormap.label.LabelLayer
+import com.kakao.vectormap.label.LabelLayerOptions
 import com.kakao.vectormap.label.LabelManager
 import com.kakao.vectormap.label.LabelOptions
 import com.kakao.vectormap.label.LabelStyle
@@ -39,8 +43,15 @@ class KakaoMapActivity : AppCompatActivity() {
 
     // cluster
     lateinit var labelManager: LabelManager
-    lateinit var labelLayer: LabelLayer
-    lateinit var labelStyles: LabelStyles
+
+    lateinit var placeLayer: LabelLayer
+    lateinit var myLocationLayer: LabelLayer
+    lateinit var placeStyles: LabelStyles
+    lateinit var myLocationStyles: LabelStyles
+
+    private var myLocationLabel: Label? = null
+
+    private var isFirstMove = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,23 +67,27 @@ class KakaoMapActivity : AppCompatActivity() {
             insets
         }
 
-//        binding.kakaoMapView.start(object : MapLifeCycleCallback(){
-//            override fun onMapDestroy() {
-//                TODO("Not yet implemented")
-//            }
-//
-//            override fun onMapError(p0: Exception?) {
-//                Log.e("KakaoMap", "Map Error", p0)
-//            }
-//        }, object: KakaoMapReadyCallback(){
-//            override fun onMapReady(p0: KakaoMap) {
-//                kakaoMap = p0
-//                initLabel() // 클러스터
-//                observerPlace()
-//                viewModel.searchPlaces()
-//            }
-//
-//        })
+        binding.kakaoMapView.start(object : MapLifeCycleCallback(){
+            override fun onMapDestroy() {
+                Log.d("KakaoMap", "Map Destroy")
+            }
+
+            override fun onMapError(p0: Exception?) {
+                Log.e("KakaoMap", "Map Error", p0)
+            }
+        }, object: KakaoMapReadyCallback(){
+            override fun onMapReady(p0: KakaoMap) {
+                kakaoMap = p0
+
+                initLabel()
+
+                observerPlace()
+                observeMyLocation()
+
+                viewModel.searchPlaces()
+            }
+
+        })
 
         // 검색어 입력
         binding.etSearch.setOnEditorActionListener { v, actionId, event ->
@@ -87,18 +102,8 @@ class KakaoMapActivity : AppCompatActivity() {
                 false // 액션 버튼이 클릭되었을때, 여기서 모든 처리를 소비하지 않겠다.
             }
         }
-    }
 
-    private fun initLabel() {
-
-        labelManager = kakaoMap.labelManager!!
-        labelLayer = labelManager.layer!!
-
-        val style = LabelStyle.from(R.drawable.ic_pin)
-
-        labelStyles = labelManager.addLabelStyles(
-            LabelStyles.from(style)
-        )!!
+        binding.ivBack.setOnClickListener { finish() }
     }
 
     private fun observerPlace(){
@@ -107,8 +112,64 @@ class KakaoMapActivity : AppCompatActivity() {
         }
     }
 
+    private fun observeMyLocation() {
+        viewModel.myLocation.observe(this) { location ->
+            drawMyLocation(location)
+        }
+    }
+
+    private fun initLabel() {
+
+        labelManager = kakaoMap.labelManager!!
+
+        placeLayer = labelManager.addLayer(
+            LabelLayerOptions.from("placeLayer")
+        )!!
+
+        myLocationLayer = labelManager.addLayer(
+            LabelLayerOptions.from("myLocationLayer")
+        )!!
+
+        // 장소 핀
+        placeStyles = labelManager.addLabelStyles(
+            LabelStyles.from(
+                LabelStyle.from(R.drawable.ic_pin)
+            )
+        )!!
+
+        // 내 위치 핀
+        myLocationStyles = labelManager.addLabelStyles(
+            LabelStyles.from(
+                LabelStyle.from(R.drawable.ic_mypin)
+            )
+        )!!
+    }
+
+
+    private fun drawMyLocation(location: Location) {
+
+        myLocationLabel?.remove()
+
+        val latLng = LatLng.from(
+            location.latitude,
+            location.longitude
+        )
+
+        val option = LabelOptions.from(latLng)
+            .setStyles(myLocationStyles)
+
+        myLocationLabel = myLocationLayer.addLabel(option)
+
+        if (isFirstMove) {
+            kakaoMap.moveCamera(
+                CameraUpdateFactory.newCenterPosition(latLng)
+            )
+            isFirstMove = false
+        }
+    }
+
     private fun drawMarker(placeList: MutableList<PlaceUiModel>){
-        labelLayer.removeAll()
+        placeLayer.removeAll()
 
         placeList.forEach {
             val option = LabelOptions.from(
@@ -116,9 +177,9 @@ class KakaoMapActivity : AppCompatActivity() {
                     it.place.latitude.toDouble(),
                     it.place.longitude.toDouble()
                 )
-            ).setStyles(labelStyles)
+            ).setStyles(placeStyles)
 
-            labelLayer.addLabel(option)
+            placeLayer.addLabel(option)
         }
     }
 }
