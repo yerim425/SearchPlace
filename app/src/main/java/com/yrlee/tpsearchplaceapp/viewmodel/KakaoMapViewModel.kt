@@ -1,5 +1,6 @@
 package com.yrlee.tpsearchplaceapp.viewmodel
 
+import android.R
 import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -30,6 +31,8 @@ class KakaoMapViewModel @Inject constructor(
     private val _myLocation = MutableLiveData<Location>()
     val myLocation: LiveData<Location> = _myLocation
 
+//    private var selectedCategoryCode: String
+
     init{
         viewModelScope.launch {
             favoriteRepository.getFavoriteIds().collect { ids->
@@ -39,6 +42,9 @@ class KakaoMapViewModel @Inject constructor(
         }
     }
     fun searchPlaces(){
+//        fun searchPlaces(category: String){
+
+//        selectedCategoryCode = getCategoryCode(category)
 
         viewModelScope.launch {
             loading.value = true
@@ -49,31 +55,42 @@ class KakaoMapViewModel @Inject constructor(
 
             val location = _myLocation.value ?: return@launch
 
-            // query 데이터
-            val searchQuery = searchQuery.value  ?: ""
+            val query = searchQuery.value ?: ""
+//            val categoryCode = selectedCategoryCode ?: ""
             val lng = location.longitude.toString()
             val lat = location.latitude.toString()
-            val page = 1
 
-            // 카카오 장소 검색 API 호출
-            val response = placeRepository.searchPlace(searchQuery, lng, lat, page)
-            val documents = response?.documents ?: emptyList() //  장소 검색 결과
+            val totalList = mutableListOf<PlaceUiModel>()
 
-            val list = placeList.value ?: mutableListOf<PlaceUiModel>()
-            if (page == 1) {
-                list.clear()
-            }
+            // 카카오 최대 3페이지
+            for (page in 1..3) {
 
-            documents.forEach {
-                val place = PlaceUiModel(
-                    it,
-                    favoriteIds.contains(it.id),
-                    0 // myServerDB에서 좋아요 개수 읽어온 값
+                val response = placeRepository.searchPlace(
+                    query,
+                    lng,
+                    lat,
+                    page
                 )
-                list.add(place)
+
+                val documents = response?.documents ?: emptyList()
+
+                documents.forEach {
+                    totalList.add(
+                        PlaceUiModel(
+                            it,
+                            favoriteIds.contains(it.id),
+                            0
+                        )
+                    )
+                }
+
+                // 마지막 페이지면 종료
+                if (response?.meta?.is_end == true) {
+                    break
+                }
             }
 
-            _placeList.value = list
+            _placeList.value = totalList
 
             loading.value = false
         }
@@ -82,8 +99,22 @@ class KakaoMapViewModel @Inject constructor(
     fun refresh() {
         viewModelScope.launch {
             _myLocation.value = locationRepository.getCurrentLocation()
+//            searchPlaces(selectedCategoryCode)
             searchPlaces()
         }
     }
+
+//    private fun getCategoryCode(categoryName: String)
+//    = when(categoryName){
+//        "화장실" -> ""
+//        "편의점" -> "CS2"
+//        "주차장" -> "PK6"
+//        "주유소" -> "OL7"
+//        "맛집" -> "FD6"
+//        "약국" -> "PM9"
+//        else -> {}
+//    }
+
+
 
 }

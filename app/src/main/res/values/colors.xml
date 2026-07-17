@@ -6,7 +6,7 @@
     <color name="gray_line">#FFeeeeee</color>
     <color name="blue">#C9E4FF</color>
     <color name="blue_dark">#83C1FF</color>
-    <color name="pink">#FFffdddd</color>
+    <color name="pink">#ffdddd</color>
     <color name="pink_dark">#ffaaaa</color>
     <color name="transparent">#00000000</color>
 </resources>

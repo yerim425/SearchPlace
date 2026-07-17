@@ -8,7 +8,7 @@
         android:id="@+id/choice01"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@drawable/baseline_family_restroom_24"
+        android:src="@drawable/ic_toilet"
         android:background="@drawable/bg_choice_selected"
         android:padding="8dp"
         android:layout_margin="4dp"/>
@@ -17,7 +17,7 @@
         android:id="@+id/choice02"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@drawable/baseline_local_gas_station_24"
+        android:src="@drawable/ic_gas"
         android:background="@drawable/bg_choice"
         android:padding="8dp"
         android:layout_margin="4dp"/>
@@ -26,7 +26,7 @@
         android:id="@+id/choice03"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@drawable/baseline_ev_station_24"
+        android:src="@drawable/ic_ev"
         android:background="@drawable/bg_choice"
         android:padding="8dp"
         android:layout_margin="4dp"/>
@@ -35,7 +35,7 @@
         android:id="@+id/choice04"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@drawable/baseline_local_pharmacy_24"
+        android:src="@drawable/ic_pharmarcy"
         android:background="@drawable/bg_choice"
         android:padding="8dp"
         android:layout_margin="4dp"/>
@@ -43,7 +43,7 @@
         android:id="@+id/choice05"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@drawable/baseline_park_24"
+        android:src="@drawable/ic_park"
         android:background="@drawable/bg_choice"
         android:padding="8dp"
         android:layout_margin="4dp"/>
@@ -51,7 +51,7 @@
         android:id="@+id/choice06"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@drawable/baseline_local_convenience_store_24"
+        android:src="@drawable/ic_convenient"
         android:background="@drawable/bg_choice"
         android:padding="8dp"
         android:layout_margin="4dp"/>
@@ -59,7 +59,7 @@
         android:id="@+id/choice07"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@drawable/baseline_restaurant_24"
+        android:src="@drawable/ic_restaurant"
         android:background="@drawable/bg_choice"
         android:padding="8dp"
         android:layout_margin="4dp"/>
@@ -68,7 +68,7 @@
         android:id="@+id/choice08"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@drawable/baseline_local_parking_24"
+        android:src="@drawable/ic_parking"
         android:background="@drawable/bg_choice"
         android:padding="8dp"
         android:layout_margin="4dp"/>
@@ -77,7 +77,7 @@
         android:id="@+id/choice09"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@drawable/baseline_self_improvement_24"
+        android:src="@drawable/ic_retiring"
         android:background="@drawable/bg_choice"
         android:padding="8dp"
         android:layout_margin="4dp"/>
@@ -86,7 +86,7 @@
         android:id="@+id/choice10"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:src="@drawable/baseline_woman_24"
+        android:src="@drawable/ic_woman"
         android:background="@drawable/bg_choice"
         android:padding="8dp"
         android:layout_margin="4dp"/>
