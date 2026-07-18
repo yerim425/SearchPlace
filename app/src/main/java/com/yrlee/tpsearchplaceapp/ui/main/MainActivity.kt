@@ -4,9 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Location
 import android.os.Bundle
-import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -17,31 +15,17 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.yrlee.tpsearchplaceapp.R
 import com.yrlee.tpsearchplaceapp.databinding.ActivityMainBinding
-import com.yrlee.tpsearchplaceapp.model.DothomeResponse
-import com.yrlee.tpsearchplaceapp.model.KakaoSearchPlaceResponse
-import com.yrlee.tpsearchplaceapp.repository.PlaceRepository
 import com.yrlee.tpsearchplaceapp.ui.favorite.FavoriteActivity
 import com.yrlee.tpsearchplaceapp.ui.map.KakaoMapActivity
 import com.yrlee.tpsearchplaceapp.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -107,16 +91,10 @@ class MainActivity : AppCompatActivity() {
             permissionResultLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION) // 퍼미션 요청
         else viewModel.searchPlaces()
 
-
-        // drawer 열기
-//        binding.toolbar.setNavigationOnClickListener {
-//            binding.drawerLayout.openDrawer(GravityCompat.START)
-//        }
-
         // 검색어 입력 리스너
         binding.etSearch.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                viewModel.searchPlaces() // 검색 장소명 키워드로 장소들 검색
+                viewModel.searchNewPlace() // 검색 장소명 키워드로 장소들 검색
 
                 // 키보드 숨기기
                 val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -130,7 +108,6 @@ class MainActivity : AppCompatActivity() {
         // 검색어 단축 버튼들 클릭에 반응하는 작업..
         setChoiceButtonListener()
 
-
         // fab 클릭 리스너 - 화면 이동
         binding.fabFavorite.setOnClickListener {
             startActivity(Intent(this, FavoriteActivity::class.java))
@@ -138,6 +115,30 @@ class MainActivity : AppCompatActivity() {
         binding.fabMap.setOnClickListener {
             startActivity(Intent(this, KakaoMapActivity::class.java))
         }
+
+        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(
+                recyclerView: RecyclerView,
+                dx: Int,
+                dy: Int
+            ) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                if (dy <= 0) return   // 아래로 스크롤할 때만
+
+                val layoutManager =
+                    recyclerView.layoutManager as LinearLayoutManager
+
+                val lastVisible = layoutManager.findLastVisibleItemPosition()
+                val totalCount = layoutManager.itemCount
+
+                if (lastVisible >= totalCount - 1 &&
+                    viewModel.loading.value != true
+                ) {
+                    viewModel.nextPage()
+                }
+            }
+        })
 
 
         //-----------------------------------------------------------------------------------------
@@ -199,7 +200,7 @@ class MainActivity : AppCompatActivity() {
         binding.etSearch.clearFocus()
 
         adapter.clear()
-        viewModel.searchPlaces()
+        viewModel.searchNewPlace()
     }
 
     // fab 메뉴 열기

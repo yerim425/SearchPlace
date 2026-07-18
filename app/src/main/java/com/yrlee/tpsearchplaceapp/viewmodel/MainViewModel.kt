@@ -35,6 +35,7 @@ class MainViewModel  @Inject constructor(
     val searchQuery = MutableLiveData("화장실") // 검색어
 
     val page = MutableLiveData<Int>(1) // 현재 페이지
+    var isEnd = false // 마지막 페이지
 
     private val _loading = MutableLiveData(false) // 로딩 여부
     val loading : LiveData<Boolean> = _loading
@@ -47,60 +48,9 @@ class MainViewModel  @Inject constructor(
             favoriteRepository.favoriteIds.collect { ids ->
                 favoriteIds = ids
                 updateFavoriteState()
-//                placeList.value?.forEach { item ->
-//                    item.isFavorite = favoriteIds.contains(item.place.id)
-//                }
-//
-//                placeList.value = placeList.value
             }
         }
     }
-
-//    fun searchPlaces(){
-//
-//        viewModelScope.launch {
-//            loading.value = true
-//
-//            if (myLocation.value == null) {
-//                myLocation.value = locationRepository.getCurrentLocation()
-//            }
-//
-//            val location = myLocation.value ?: return@launch
-//
-//            // query 데이터
-//            val searchQuery = searchQuery.value  ?: ""
-//            val lng = location.longitude.toString()
-//            val lat = location.latitude.toString()
-//            val page = page.value ?: 1
-//
-//            // 카카오 장소 검색 API 호출
-//            val response = placeRepository.searchPlace(searchQuery, lng, lat, page)
-//            val documents = response?.documents ?: emptyList() //  장소 검색 결과
-//
-//            val list = placeList.value ?: mutableListOf<PlaceUiModel>()
-//            if (page == 1) {
-//                list.clear()
-//            }
-//
-//            documents.forEach {
-//                val place = PlaceUiModel(
-//                    it,
-//                    favoriteIds.contains(it.id),
-//                    0 // myServerDB에서 좋아요 개수 읽어온 값
-//                )
-//                list.add(place)
-//            }
-//
-//            placeList.value = list
-//
-//            count.value = "${list.size}/${response?.meta?.total_count ?: 0}"
-//
-//            loading.value = false
-//        }
-//    }
-
-//    import android.util.Log
-//    import retrofit2.HttpException
 
     fun searchPlaces() {
 
@@ -140,7 +90,9 @@ class MainViewModel  @Inject constructor(
                 }
 
                 _placeList.value = list
-                count.value = "${list.size}/${response?.meta?.total_count ?: 0}"
+                val totalCount = response?.meta?.total_count ?: 0
+                count.value = "${list.size}/${totalCount.coerceAtMost(45)}"
+                isEnd = response?.meta?.is_end == true
 
             } catch (e: HttpException) {
 
@@ -161,27 +113,6 @@ class MainViewModel  @Inject constructor(
 
     fun likePlace(item: PlaceUiModel) {
 
-//        viewModelScope.launch {
-//
-//            if (favoriteIds.contains(item.place.id)) {
-//
-//                favoriteRepository.delete(item.place.id)
-//
-//                favoriteIds.remove(item.place.id)
-//
-//                item.isFavorite = false
-//
-//            } else {
-//
-//                favoriteRepository.insert(item.place)
-//
-//                favoriteIds.add(item.place.id)
-//
-//                item.isFavorite = true
-//            }
-//
-//            placeList.value = placeList.value
-//        }
         viewModelScope.launch {
 
             if (item.isFavorite) {
@@ -195,20 +126,22 @@ class MainViewModel  @Inject constructor(
     // 다음 페이지
     fun nextPage() {
 
+        if(_loading.value == true || isEnd) return
+
         page.value = (page.value ?: 1) + 1
 
         searchPlaces()
     }
 
     // 새로 검색
-//    fun searchNewPlace() {
-//
-//        page.value = 1
-//
-//        placeList.value = mutableListOf()
-//
-//        searchPlaces()
-//    }
+    fun searchNewPlace() {
+
+        page.value = 1
+
+        _placeList.value = mutableListOf()
+
+        searchPlaces()
+    }
 
     fun getMyLocation() = myLocation.value
 
