@@ -2,27 +2,17 @@ package com.yrlee.tpsearchplaceapp.data.local
 
 import com.yrlee.tpsearchplaceapp.model.Place
 import jakarta.inject.Inject
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class FavoriteRepository @Inject constructor(
     private val dao: FavoriteDao
 ) {
 
-//    val favoriteIds = mutableSetOf<String>() // 좋아요 Set
+    val favoriteIds: Flow<Set<String>> =
+        dao.getAllIds()
+            .map { it.toSet() } // set으로 바꾸는 것이 조회 속도가 빠름
 
-    val favorites = dao.getAll()
-
-    //data class FavoritePlace(
-    //    @PrimaryKey
-    //    var id: String,
-    //    var place_name: String,
-    //    var category_name: String,
-    //    var phone: String,
-    //    var address_name: String,
-    //    var road_address_name: String,
-    //    @SerializedName("x") var longitude: String,
-    //    @SerializedName("y") var latitude: String,
-    //    var place_url: String,
-    //)
     suspend fun insert(p: Place) {
         val fp = FavoritePlace(
             id = p.id,
@@ -42,7 +32,7 @@ class FavoriteRepository @Inject constructor(
         dao.deleteById(id)
     }
 
-    fun getFavoriteIds() = dao.getAllIds()
+//    fun getFavoriteIds() = dao.getAllIds()
 
     fun getAll() = dao.getAll()
 

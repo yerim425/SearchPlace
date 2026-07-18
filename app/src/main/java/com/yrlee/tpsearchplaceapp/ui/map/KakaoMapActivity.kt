@@ -12,7 +12,10 @@ import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.webkit.WebViewClient
 import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -39,6 +42,10 @@ import com.yrlee.tpsearchplaceapp.model.PlaceUiModel
 import com.yrlee.tpsearchplaceapp.viewmodel.KakaoMapViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.Exception
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.toColorInt
+import androidx.core.view.GravityCompat
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 @AndroidEntryPoint
 class KakaoMapActivity : AppCompatActivity() {
@@ -50,12 +57,16 @@ class KakaoMapActivity : AppCompatActivity() {
     private lateinit var kakaoMap: KakaoMap
 
     // cluster
-    lateinit var labelManager: LabelManager
+    lateinit var labelManager: LabelManager // 마커 관리자
 
-    lateinit var placeLayer: LabelLayer
-    lateinit var myLocationLayer: LabelLayer
-    lateinit var placeStyles: LabelStyles
-    lateinit var myLocationStyles: LabelStyles // 내 위치 마커 스타일
+    lateinit var placeLayer: LabelLayer //  장소 마커 Layer
+    lateinit var myLocationLayer: LabelLayer // 내 위치 마커 Layer
+
+
+    private val placeLabels = HashMap<Label, PlaceUiModel>() // 장소 실제 마커들
+    private val clusterLabels = HashMap<Label, Cluster>() // 클러스터 실제 마커들
+    private var myLocationLabel: Label? = null // 내 위치 실제 마커
+
 
     // 카테고리 별 마커 스타일
     lateinit var defaultStyles: LabelStyles // 기본
@@ -83,15 +94,15 @@ class KakaoMapActivity : AppCompatActivity() {
     lateinit var retiringStyles: LabelStyles  // 레스토랑
     lateinit var womanStyles: LabelStyles      // 레스토랑
 
-    // 클러스터 마커 스타일
-    lateinit var clusterStyles: LabelStyles //
-
-    private var myLocationLabel: Label? = null
+    lateinit var myLocationStyles: LabelStyles // 내 위치 마커 스타일
 
     private var isFirstMove = true
 
     var choiceID = R.id.choice01 // 선택한 카테고리 id
     var searchQuery = "화장실" //  검색어
+
+    // bottom sheet behavior
+    lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -124,19 +135,27 @@ class KakaoMapActivity : AppCompatActivity() {
 
                 initLabel()
 
-                // 클러스터 마커 클릭 이벤트
+                // 클러스터 마커 클릭 이벤트 -> 줌 인
                 kakaoMap.setOnLabelClickListener { _, _, label ->
 
-                    if (label.tag == "cluster") {
-                        kakaoMap.moveCamera(
-                            CameraUpdateFactory.newCenterPosition(
-                                label.position,
-                                kakaoMap.zoomLevel + 1
+                    when (label.tag) {
+                        "cluster" -> {
+                            kakaoMap.moveCamera(
+                                CameraUpdateFactory.newCenterPosition(
+                                    label.position,
+                                    kakaoMap.zoomLevel + 1
+                                )
                             )
-                        )
-                        true
-                    } else {
-                        false
+                            true
+                        }
+                        "place" -> {
+                            val place = placeLabels[label] ?: return@setOnLabelClickListener false
+                            // drawer 열기
+                            viewModel.selectPlace(place)
+
+                            true
+                        }
+                        else -> false
                     }
                 }
 
@@ -150,7 +169,7 @@ class KakaoMapActivity : AppCompatActivity() {
                     }
                 }
 
-                viewModel.searchPlaces()
+                viewModel.searchPlaces() // 장소 검색
             }
 
         })
@@ -172,6 +191,31 @@ class KakaoMapActivity : AppCompatActivity() {
         }
 
         binding.ivBack.setOnClickListener { finish() }
+
+        // webview 설정
+//        binding.wv.apply {
+//            settings.javaScriptEnabled = true
+//            settings.domStorageEnabled = true
+//            settings.loadWithOverviewMode = true
+//            settings.useWideViewPort = true
+//
+//            webViewClient = WebViewClient()
+//        }
+
+
+        // bottom sheet
+        bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheet)
+        bottomSheetBehavior.isHideable = true
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        bottomSheetBehavior.skipCollapsed = true
+
+        // BottomShhet 열기
+        viewModel.selectedPlace.observe(this) {
+            binding.selectedPlace = it
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        }
+
+
     }
 
     private fun observerPlace() {
@@ -187,6 +231,7 @@ class KakaoMapActivity : AppCompatActivity() {
         }
     }
 
+    // label 초기화
     private fun initLabel() {
 
         labelManager = kakaoMap.labelManager!!
@@ -229,20 +274,9 @@ class KakaoMapActivity : AppCompatActivity() {
         womanStyles = createStyle(R.drawable.ic_woman_marker)
         defaultStyles = createStyle(R.drawable.ic_default_marker)
 
-//        clusterStyles = labelManager.addLabelStyles(
-//            LabelStyles.from(
-//                LabelStyle.from(R.drawable.ic_cluster_pink)
-//                    .setTextStyles(
-//                        36,
-//                        Color.BLACK
-//                    )
-//                    .setAnchorPoint(0.5f, 0.0f)
-//            )
-//        )!!
-
     }
 
-
+    // marker style 생성 - 중복 코드 방지
     private fun createStyle(drawable: Int): LabelStyles {
 
         return labelManager.addLabelStyles(
@@ -278,11 +312,12 @@ class KakaoMapActivity : AppCompatActivity() {
     // 검색된 장소 마커 그리기
     private fun drawMarker(placeList: MutableList<PlaceUiModel>) {
 
+        // 마커 다시 그리기 위해 초기화
         placeLayer.removeAll()
-
+        clusterLabels.clear()
+        placeLabels.clear()
 
         val zoom = kakaoMap.zoomLevel
-
         val clusters = makeClusters(placeList, zoom)
 
         clusters.forEach { cluster ->
@@ -292,29 +327,23 @@ class KakaoMapActivity : AppCompatActivity() {
                 cluster.longitude
             )
 
-            if (cluster.places.size == 1) {
+            if (cluster.places.size == 1) { // 1개일 경우 장소 마커 생성
 
                 val place = cluster.places.first()
 
                 val style = getPlaceStyle(place.place.category_name)
 
-                placeLayer.addLabel(
+                val label = placeLayer.addLabel(
                     LabelOptions.from(latLng)
                         .setStyles(style)
                         .setTag("place")
                 )
 
-            } else {
-                clusterLabels.clear()
+                if (label != null) {
+                    placeLabels[label] = place // 장소 마커를 map으로 관리
+                }
 
-//                placeLayer.addLabel(
-//                    LabelOptions.from(latLng)
-//                        .setStyles(getClusterStyle(cluster.places.size))
-//                        .setTexts(
-//                            LabelTextBuilder()
-//                                .setTexts(cluster.places.size.toString())
-//                        )
-//                )
+            } else { // 클러스터 마커 생성
 
                 val label = placeLayer.addLabel(
                     LabelOptions.from(latLng)
@@ -323,13 +352,13 @@ class KakaoMapActivity : AppCompatActivity() {
                 )
 
                 if (label != null) {
-                    clusterLabels[label] = cluster
+                    clusterLabels[label] = cluster // 클러스터 마커를 map으로 관리
                 }
             }
         }
     }
 
-    // 클러스터 숫자별로 캐시를 만들어 재사용
+    // 클러스터 숫자별로 캐시를 만들어 재사용 - 메모리 부하 방지
     private val clusterStyleCache = HashMap<Int, LabelStyles>()
 
     private fun getClusterStyle(count: Int): LabelStyles {
@@ -339,15 +368,13 @@ class KakaoMapActivity : AppCompatActivity() {
             labelManager.addLabelStyles(
                 LabelStyles.from(
                     LabelStyle.from(
-                        createClusterBitmap(count)
+                        createClusterBitmap(count) // bitmap으로 클러스터를 그림
                     )
                 )
             )!!
         }
     }
 
-    // 클러스터 마커 여부를 구분
-    private val clusterLabels = HashMap<Label, Cluster>()
 
     private fun getPlaceStyle(category: String): LabelStyles {
 
@@ -457,6 +484,7 @@ class KakaoMapActivity : AppCompatActivity() {
         zoom: Int
     ): List<Cluster> {
 
+        // 범위
         val cellSize = when {
             zoom >= 17 -> 0.0005
             zoom >= 16 -> 0.001
@@ -509,17 +537,13 @@ class KakaoMapActivity : AppCompatActivity() {
 
         val size = 120
 
-        val bitmap = Bitmap.createBitmap(
-            size,
-            size,
-            Bitmap.Config.ARGB_8888
-        )
+        val bitmap = createBitmap(size, size)
 
         val canvas = Canvas(bitmap)
 
         // 원
         val circlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            color = Color.parseColor("#ddFFAAAA")
+            color = "#ddFFAAAA".toColorInt()
         }
 
         canvas.drawCircle(

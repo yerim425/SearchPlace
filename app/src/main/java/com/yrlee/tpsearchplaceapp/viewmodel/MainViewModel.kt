@@ -3,6 +3,7 @@ package com.yrlee.tpsearchplaceapp.viewmodel
 import android.content.Intent
 import android.location.Location
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -24,26 +25,28 @@ class MainViewModel  @Inject constructor(
     private val favoriteRepository: FavoriteRepository
 ) : ViewModel(){
 
-    val placeList = MutableLiveData<MutableList<PlaceUiModel>>(mutableListOf()) // 장소 리스트
+    private val _placeList = MutableLiveData<MutableList<PlaceUiModel>>(mutableListOf()) // 장소 리스트
+    val placeList :LiveData<MutableList<PlaceUiModel>> = _placeList
+    private var favoriteIds = emptySet<String>()
 
-    private val favoriteIds = mutableSetOf<String>()
+    private val _myLocation = MutableLiveData<Location>() // 내 위치
+    val myLocation: LiveData<Location> = _myLocation
 
-    val myLocation = MutableLiveData<Location>() // 내 위치
+    val searchQuery = MutableLiveData("화장실") // 검색어
 
-    val searchQuery = MutableLiveData<String>("화장실") // 검색어
     val page = MutableLiveData<Int>(1) // 현재 페이지
 
-    val loading = MutableLiveData(false) // 로딩 여부
+    private val _loading = MutableLiveData(false) // 로딩 여부
+    val loading : LiveData<Boolean> = _loading
 
     val count = MutableLiveData("") // 아이템개수/전체개수
 
     init {
         // 내 좋아요 장소 id 목록 가져오기
         viewModelScope.launch {
-            favoriteRepository.getFavoriteIds().collect { ids ->
-                favoriteIds.clear()
-                favoriteIds.addAll(ids)
-
+            favoriteRepository.favoriteIds.collect { ids ->
+                favoriteIds = ids
+                updateFavoriteState()
 //                placeList.value?.forEach { item ->
 //                    item.isFavorite = favoriteIds.contains(item.place.id)
 //                }
@@ -104,10 +107,10 @@ class MainViewModel  @Inject constructor(
         viewModelScope.launch {
 
             try {
-                loading.value = true
+                _loading.value = true
 
-                if (myLocation.value == null) {
-                    myLocation.value = locationRepository.getCurrentLocation()
+                if (_myLocation.value == null) {
+                    _myLocation.value = locationRepository.getCurrentLocation()
                 }
 
                 val location = myLocation.value ?: return@launch
@@ -136,7 +139,7 @@ class MainViewModel  @Inject constructor(
                     )
                 }
 
-                placeList.value = list
+                _placeList.value = list
                 count.value = "${list.size}/${response?.meta?.total_count ?: 0}"
 
             } catch (e: HttpException) {
@@ -150,7 +153,7 @@ class MainViewModel  @Inject constructor(
 
             } finally {
 
-                loading.value = false
+                _loading.value = false
 
             }
         }
@@ -158,27 +161,34 @@ class MainViewModel  @Inject constructor(
 
     fun likePlace(item: PlaceUiModel) {
 
-
+//        viewModelScope.launch {
+//
+//            if (favoriteIds.contains(item.place.id)) {
+//
+//                favoriteRepository.delete(item.place.id)
+//
+//                favoriteIds.remove(item.place.id)
+//
+//                item.isFavorite = false
+//
+//            } else {
+//
+//                favoriteRepository.insert(item.place)
+//
+//                favoriteIds.add(item.place.id)
+//
+//                item.isFavorite = true
+//            }
+//
+//            placeList.value = placeList.value
+//        }
         viewModelScope.launch {
 
-            if (favoriteIds.contains(item.place.id)) {
-
+            if (item.isFavorite) {
                 favoriteRepository.delete(item.place.id)
-
-                favoriteIds.remove(item.place.id)
-
-                item.isFavorite = false
-
             } else {
-
                 favoriteRepository.insert(item.place)
-
-                favoriteIds.add(item.place.id)
-
-                item.isFavorite = true
             }
-
-            placeList.value = placeList.value
         }
     }
 
@@ -191,15 +201,23 @@ class MainViewModel  @Inject constructor(
     }
 
     // 새로 검색
-    fun searchNewPlace() {
-
-        page.value = 1
-
-        placeList.value = mutableListOf()
-
-        searchPlaces()
-    }
+//    fun searchNewPlace() {
+//
+//        page.value = 1
+//
+//        placeList.value = mutableListOf()
+//
+//        searchPlaces()
+//    }
 
     fun getMyLocation() = myLocation.value
+
+    private fun updateFavoriteState() {
+        _placeList.value = _placeList.value?.map { place ->
+            place.copy(
+                isFavorite = favoriteIds.contains(place.place.id)
+            )
+        }?.toMutableList()
+    }
 
 }

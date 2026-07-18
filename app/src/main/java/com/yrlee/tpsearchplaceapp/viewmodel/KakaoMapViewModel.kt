@@ -24,27 +24,35 @@ class KakaoMapViewModel @Inject constructor(
     var _placeList = MutableLiveData<MutableList<PlaceUiModel>>()
     val placeList: LiveData<MutableList<PlaceUiModel>> = _placeList
 
-    private val favoriteIds = mutableSetOf<String>()
+    private var favoriteIds = emptySet<String>()
     val searchQuery = MutableLiveData("화장실")
     val loading = MutableLiveData(false)
 
     private val _myLocation = MutableLiveData<Location>()
     val myLocation: LiveData<Location> = _myLocation
 
-//    private var selectedCategoryCode: String
+    private val _selectedPlace = MutableLiveData<PlaceUiModel>()
+    val selectedPlace: LiveData<PlaceUiModel> = _selectedPlace
+
+    fun selectPlace(place: PlaceUiModel) {
+
+        viewModelScope.launch {
+            val isFavorite = favoriteRepository.isFavorite(place.place.id)
+            _selectedPlace.value = place.copy(
+                isFavorite = isFavorite
+            )
+        }
+    }
 
     init{
         viewModelScope.launch {
-            favoriteRepository.getFavoriteIds().collect { ids->
-                favoriteIds.clear()
-                favoriteIds.addAll(ids)
+            favoriteRepository.favoriteIds.collect { ids ->
+                favoriteIds = ids
+
             }
         }
     }
     fun searchPlaces(){
-//        fun searchPlaces(category: String){
-
-//        selectedCategoryCode = getCategoryCode(category)
 
         viewModelScope.launch {
             loading.value = true
@@ -56,7 +64,6 @@ class KakaoMapViewModel @Inject constructor(
             val location = _myLocation.value ?: return@launch
 
             val query = searchQuery.value ?: ""
-//            val categoryCode = selectedCategoryCode ?: ""
             val lng = location.longitude.toString()
             val lat = location.latitude.toString()
 
@@ -99,22 +106,34 @@ class KakaoMapViewModel @Inject constructor(
     fun refresh() {
         viewModelScope.launch {
             _myLocation.value = locationRepository.getCurrentLocation()
-//            searchPlaces(selectedCategoryCode)
             searchPlaces()
         }
     }
 
-//    private fun getCategoryCode(categoryName: String)
-//    = when(categoryName){
-//        "화장실" -> ""
-//        "편의점" -> "CS2"
-//        "주차장" -> "PK6"
-//        "주유소" -> "OL7"
-//        "맛집" -> "FD6"
-//        "약국" -> "PM9"
-//        else -> {}
-//    }
+    fun likePlace(item: PlaceUiModel){
+        viewModelScope.launch {
 
+            if (item.isFavorite) {
 
+                favoriteRepository.delete(item.place.id)
+
+            } else {
+
+                favoriteRepository.insert(item.place)
+            }
+
+            item.isFavorite = !item.isFavorite
+            _selectedPlace.value = item
+
+        }
+    }
+
+    private fun updateFavoriteState() {
+        _placeList.value = _placeList.value?.map { place ->
+            place.copy(
+                isFavorite = favoriteIds.contains(place.place.id)
+            )
+        }?.toMutableList()
+    }
 
 }

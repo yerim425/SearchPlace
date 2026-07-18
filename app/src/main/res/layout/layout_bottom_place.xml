@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <variable
+            name="place"
+            type="com.yrlee.tpsearchplaceapp.model.PlaceUiModel" />
+
+        <variable
+            name="vm"
+            type="com.yrlee.tpsearchplaceapp.viewmodel.KakaoMapViewModel"/>
+    </data>
+    <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        app:contentPadding="16dp"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="8dp"
+        app:cardBackgroundColor="@color/white"
+        android:layout_margin="8dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tv_place_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{place.place.place_name}"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:padding="4dp"
+                android:layout_toStartOf="@id/cb_favorite"/>
+
+            <CheckBox
+                android:id="@+id/cb_favorite"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentEnd="true"
+                android:checked="@{place.isFavorite}"
+                android:onClick="@{() -> vm.likePlace(place)}"
+                android:button="@drawable/selector_cb_favor"
+                style="@style/NoTintCheckBox"
+                />
+
+            <TextView
+                android:id="@+id/tv_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_place_name"
+                android:text="@{place.place.address_name != null ? place.place.address_name : place.place.road_address_name}"
+                android:padding="4dp"/>
+
+            <TextView
+                android:id="@+id/tv_distance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text='@{place.place.distance + "m"}'
+                android:textStyle="bold"
+                android:textColor="@color/pink_dark"
+                android:layout_below="@id/tv_address"
+                android:padding="4dp"/>
+
+            <TextView
+                android:id="@+id/tv_phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{place.place.phone}"
+                android:layout_below="@id/tv_address"
+                android:padding="4dp"
+                android:layout_alignParentEnd="true"/>
+        </RelativeLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+</layout>
