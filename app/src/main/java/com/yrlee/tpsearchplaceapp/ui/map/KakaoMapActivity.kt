@@ -1,6 +1,7 @@
 package com.yrlee.tpsearchplaceapp.ui.map
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -46,6 +47,8 @@ import androidx.core.graphics.createBitmap
 import androidx.core.graphics.toColorInt
 import androidx.core.view.GravityCompat
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.gson.Gson
+import com.yrlee.tpsearchplaceapp.ui.detail.PlaceDetailActivity
 
 @AndroidEntryPoint
 class KakaoMapActivity : AppCompatActivity() {
@@ -162,6 +165,10 @@ class KakaoMapActivity : AppCompatActivity() {
                 observeMyLocation() // 내 위치 그리기
                 observerPlace() // 검색 장소 그리기
 
+                kakaoMap.setOnCameraMoveStartListener { _, _ ->
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                }
+
                 // 카메라 이동 종료 시 다시 클러스터링
                 kakaoMap.setOnCameraMoveEndListener { _, _, _ ->
                     viewModel.placeList.value?.let {
@@ -192,16 +199,6 @@ class KakaoMapActivity : AppCompatActivity() {
 
         binding.ivBack.setOnClickListener { finish() }
 
-        // webview 설정
-//        binding.wv.apply {
-//            settings.javaScriptEnabled = true
-//            settings.domStorageEnabled = true
-//            settings.loadWithOverviewMode = true
-//            settings.useWideViewPort = true
-//
-//            webViewClient = WebViewClient()
-//        }
-
 
         // bottom sheet
         bottomSheetBehavior = BottomSheetBehavior.from(binding.bottomSheet)
@@ -213,6 +210,16 @@ class KakaoMapActivity : AppCompatActivity() {
         viewModel.selectedPlace.observe(this) {
             binding.selectedPlace = it
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        }
+
+        binding.bottomSheet.setOnClickListener {
+            val placeItem = viewModel.selectedPlace.value
+            placeItem?.let{
+                val s: String = Gson().toJson(it.place)
+                val intent = Intent(this, PlaceDetailActivity::class.java)
+                intent.putExtra("place", s)
+                startActivity(intent)
+            }
         }
 
 
