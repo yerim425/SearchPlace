@@ -31,7 +31,7 @@
 - 지도 마커 클러스터링
 
 ## 와이어프레임 / 시스템 구조도
-<img src="images/wireframe_structure.png" width="400"/>
+<img src="images/wireframe_structure.png" width="500"/>
 
 ## UI Flow
 <!--img src="images/ui_flow.png" width="300"-->
