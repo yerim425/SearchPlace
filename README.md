@@ -16,7 +16,8 @@
 - Local Database : Room(SQLite)
 - Dependency Injection : Hilt
 - Development Environment : Android Studio
-- Open API / SDK : Kakao Local API, Kakao Maps SDK, Google Fused Location Provider
+- API / SDK : Kakao Maps SDK, Google Fused Location Provider
+- Open API : Kakao Local API
 
 ## 사용기술
 - Kakao Local API를 활용한 주변 장소 검색
@@ -30,10 +31,10 @@
 - 지도 마커 클러스터링
 
 ## 와이어프레임 / 시스템 구조도
-<!--img src="images/wireframe_structure.png" width="300"-->
+<img src="images/wireframe_structure.png" width="300"/>
 
 ## UI Flow
-<!--img src="images/ui_flow.png" width="300"-->
+<img src="images/ui_flow.png" width="300"/>
 
 ## 주요기능
 
