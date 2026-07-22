@@ -34,13 +34,13 @@
 <img src="images/wireframe_structure.png" width="500"/>
 
 ## UI Flow
-<!--img src="images/ui_flow.png" width="300"-->
+<img src="images/ui_flow.png" width="500">
 
 ## 주요기능
 
-### 1) 내 위치 기반 공공장소 조회
+### 1) 내 위치 기반 장소 조회
 
 ### 2) 좋아요 등록/해지
 
-### 3) 
+### 3) 카카오 지도 마커/클러스터링
 
