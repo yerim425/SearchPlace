@@ -44,9 +44,9 @@
 #### - RecyclerView 를 통해 장소 아이템 배치 & 무한 스크롤 페이징 적용
 #### - 장소 아이템 클릭 시, 장소 상세 화면으로 이동
 <p>
-  <img src="images/home1" width="200">
-  <img src="images/home2" width="200">
-  <img src="images/detail1" width="200">
+  <img src="images/home1.jpg" width="200">
+  <img src="images/home2.jpg" width="200">
+  <img src="images/detail1.jpg" width="200">
 </p>
 
 ### 2) 좋아요 목록 화면
@@ -54,8 +54,8 @@
 #### - Recyclerview를 통해 좋아요 아이템 배치
 #### - 좋아요 아이템 클릭 시, 장소 상세 화면으로 이동
 <p>
-  <img src="images/like" width="200">
-  <img src="images/detail1" width="200">
+  <img src="images/like.jpg" width="200">
+  <img src="images/detail1.jpg" width="200">
 </p>
 
 ### 3) 카카오 지도 화면
@@ -65,8 +65,8 @@
 #### - 장소 마커 클릭 시, Bottom Sheet를 통해 장소 정보 표시
 #### - Bottom Sheet 클릭 시, 장소 상세 화면으로 이동
 <p>
-  <img src="images/map1" width="200">
-  <img src="images/map2" width="200">
-  <img src="images/detail2" width="200">
+  <img src="images/map1.jpg" width="200">
+  <img src="images/map2.jpg" width="200">
+  <img src="images/detail2.jpg" width="200">
 </p>
 
