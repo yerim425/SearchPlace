@@ -39,11 +39,34 @@
 ## 주요기능
 
 ### 1) 내 위치 주변 장소 조회
-#### - 카카오 로컬 검색 API 호출, RoomDB 좋아요 여부 조회 및 UI 반영
+#### - 카카오 로컬 검색 API 호출
+#### - RoomDB에서 각 장소 아이템의 좋아요 여부 조회
+#### - RecyclerView 를 통해 장소 아이템 배치 & 무한 스크롤 페이징 적용
+#### - 장소 아이템 클릭 시, 장소 상세 화면으로 이동
+<p>
+  <img src="images/home1" width="200">
+  <img src="images/home2" width="200">
+  <img src="images/detail1" width="200">
+</p>
 
 ### 2) 좋아요 목록 화면
-#### - RoomDB에서 좋아요 목록 조회 및 UI 반영
+#### - RoomDB에서 좋아요 목록 조회
+#### - Recyclerview를 통해 좋아요 아이템 배치
+#### - 좋아요 아이템 클릭 시, 장소 상세 화면으로 이동
+<p>
+  <img src="images/like" width="200">
+  <img src="images/detail1" width="200">
+</p>
 
 ### 3) 카카오 지도 화면
-#### - 내 위치 주변 장소 조회 및 마커 클러스터링
+#### - 내 위치 주변 장소 조회
+#### - Kakao Map SDK 의 Label 기능 활용하여 마커 생성 
+#### - 카테고리 별 커스텀 마커 아이콘과 bitmap 기반 클러스터 마커 생성
+#### - 장소 마커 클릭 시, Bottom Sheet를 통해 장소 정보 표시
+#### - Bottom Sheet 클릭 시, 장소 상세 화면으로 이동
+<p>
+  <img src="images/map1" width="200">
+  <img src="images/map2" width="200">
+  <img src="images/detail2" width="200">
+</p>
 
