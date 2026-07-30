@@ -4,7 +4,7 @@
 <p>
   <img src='images/mockup1.png' width='30%'/>
   <img src='images/mockup2.png' width='30%'/>
-  <img src='images/mockup13.png' width='30%'/>
+  <img src='images/mockup3.png' width='30%'/>
 </p>
 
 ## 개요
