@@ -1,6 +1,12 @@
 # 서치플레이스 SearchPlace
 - Android Native App, 1인 제작
 
+<p>
+  <img src='images/mockup1.png' width='30%'/>
+  <img src='images/mockup2.png' width='30%'/>
+  <img src='images/mockup13.png' width='30%'/>
+</p>
+
 ## 개요
 ### 내 주변 공공장소를 빠르게 검색하고 길찾기까지 지원하는 공공장소 서치 앱입니다.
 - 급하게 공공장소를 방문해야 할 때 현재 위치를 기반으로 주변 공공장소를 검색하여 빠르게 확인할 수 있다.
